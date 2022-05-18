@@ -10,5 +10,6 @@ namespace AutoLoadGame
     {
         Save,
         MechBay,
+        MainMenu
     }
 }

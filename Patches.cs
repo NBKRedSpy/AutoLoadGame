@@ -31,11 +31,18 @@ namespace AutoLoadGame
             {
                 try
                 {
-                    if (File.Exists(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile))
+                    bool isCommandLine = GetCommandLineMode(out mode);
+
+                    if (isCommandLine)
+                    {
+                        Core.Log($"Command Line mode: {mode}");
+                    }
+                    else if (File.Exists(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile))
                     {
                         Patches.MainMenu_ShowRefreshingSaves_Patch.mode = (Mode)Enum.Parse(typeof(Mode), File.ReadAllText(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile));
                         Core.Log((object)("Read mode: " + (object)Patches.MainMenu_ShowRefreshingSaves_Patch.mode));
                     }
+
                     if (!Patches.MainMenu_ShowRefreshingSaves_Patch.doneMode)
                     {
                         if (!Input.GetKey(KeyCode.LeftControl))
@@ -53,10 +60,16 @@ namespace AutoLoadGame
                                 Patches.MainMenu_ShowRefreshingSaves_Patch.mode = Mode.Save;
                                 Core.Log((object)"Mode is Save");
                                 break;
+                            case Mode.MainMenu:
+                                goto label_10;
                         }
-                        Core.Log((object)("Writing mode: " + (object)Patches.MainMenu_ShowRefreshingSaves_Patch.mode));
-                        File.WriteAllText(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile, Patches.MainMenu_ShowRefreshingSaves_Patch.mode.ToString());
-                        Core.Log((object)("Read back: " + (object)(Mode)Enum.Parse(typeof(Mode), File.ReadAllText(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile))));
+
+                        if (!isCommandLine)
+                        {
+                            Core.Log((object)("Writing mode: " + (object)Patches.MainMenu_ShowRefreshingSaves_Patch.mode));
+                            File.WriteAllText(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile, Patches.MainMenu_ShowRefreshingSaves_Patch.mode.ToString());
+                            Core.Log((object)("Read back: " + (object)(Mode)Enum.Parse(typeof(Mode), File.ReadAllText(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile))));
+                        }
                         Patches.MainMenu_ShowRefreshingSaves_Patch.doneMode = true;
                     }
                 }
@@ -65,8 +78,33 @@ namespace AutoLoadGame
                     Core.Log((object)ex);
                 }
             label_10:
-                return !Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.RightShift);
+                return (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.RightShift));
             }
+            public static bool GetCommandLineMode(out Mode mode)
+            {
+
+
+                string[] args = Environment.GetCommandLineArgs();
+
+                string autoLoadModeArg = args.FirstOrDefault(x => x.StartsWith("-AutoLoadGame=", StringComparison.OrdinalIgnoreCase));
+
+                if (string.IsNullOrEmpty(autoLoadModeArg))
+                {
+                    mode = Mode.Save;
+                    return false;
+                }
+
+                string[] autoLoadModeArgSplit = autoLoadModeArg.Split('=');
+
+                if (autoLoadModeArgSplit.Length != 2)
+                {
+                    mode = Mode.Save;
+                    return false;
+                }
+
+                return Enum.TryParse(autoLoadModeArgSplit[1], out mode);
+            }
+
 
             public static void Postfix(MainMenu __instance, BattleTech.Save.SaveGameStructure.SaveGameStructure ____saveStructure)
             {
@@ -79,13 +117,17 @@ namespace AutoLoadGame
                     else
                     {
                         Patches.MainMenu_ShowRefreshingSaves_Patch.doneAbort = true;
-                        Core.Log((object)("Running mode: " + (object)Patches.MainMenu_ShowRefreshingSaves_Patch.mode));
+                        Core.Log((object)("Running mode: " + (object)mode));
                         if (Patches.MainMenu_ShowRefreshingSaves_Patch.mode == Mode.MechBay)
                         {
                             Core.Log((object)"Loading MechBay");
                             LazySingletonBehavior<UIManager>.Instance.GetOrCreateUIModule<SkirmishMechBayPanel>().SetData();
                         }
-                        else
+                        else if (Patches.MainMenu_ShowRefreshingSaves_Patch.mode == Mode.MainMenu)
+                        {
+                            //Will go to main menu.
+                        }
+                        else //Assume Mode.Save
                         {
                             Core.Log((object)"Loading Save");
                             SaveManager saveManager = UnityGameInstance.BattleTechGame.SaveManager;

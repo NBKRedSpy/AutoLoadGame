@@ -32,10 +32,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony" />
-    <Reference Include="Assembly-CSharp" />
+    <Reference Include="0Harmony">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="UnityEngine.CoreModule" />
+    <Reference Include="UnityEngine.CoreModule">
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core.cs" />
@@ -44,4 +50,13 @@
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y "$(TargetPath)" "E:\Games\Steam\steamapps\common\BATTLETECH\Mods\$(ProjectName)\"
+IF NOT ERRORLEVEL 0 ( echo copy failed &amp; exit /b )
+rd /q /s  $(ProjectName)
+robocopy . $(ProjectName) $(ProjectName).dll mod.json
+"C:\Program Files\7-Zip\7z.exe" a $(ProjectName).zip $(ProjectName)
+
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>
