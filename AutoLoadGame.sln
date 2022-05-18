@@ -1,0 +1,20 @@
+
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoLoadGame", "AutoLoadGame.csproj", "{702D1EF3-5A75-438D-9816-C0CC69C5762E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{702D1EF3-5A75-438D-9816-C0CC69C5762E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{702D1EF3-5A75-438D-9816-C0CC69C5762E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{702D1EF3-5A75-438D-9816-C0CC69C5762E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{702D1EF3-5A75-438D-9816-C0CC69C5762E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
