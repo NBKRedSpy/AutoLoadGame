@@ -17,88 +17,88 @@ using UnityEngine;
 
 namespace AutoLoadGame
 {
-  public class Patches
-  {
-    [HarmonyPatch(typeof (MainMenu), "ShowRefreshingSaves")]
-    public static class MainMenu_ShowRefreshingSaves_Patch
+    public class Patches
     {
-      private static bool doneMode;
-      private static bool doneAbort;
-      private static Mode mode;
-      private static string saveFile = "Mods/AutoLoadGame/operatingMode.txt";
+        [HarmonyPatch(typeof(MainMenu), "ShowRefreshingSaves")]
+        public static class MainMenu_ShowRefreshingSaves_Patch
+        {
+            private static bool doneMode;
+            private static bool doneAbort;
+            private static Mode mode;
+            private static string saveFile = "Mods/AutoLoadGame/operatingMode.txt";
 
-      public static bool Prepare()
-      {
-        try
-        {
-          if (File.Exists(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile))
-          {
-            Patches.MainMenu_ShowRefreshingSaves_Patch.mode = (Mode) Enum.Parse(typeof (Mode), File.ReadAllText(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile));
-            Core.Log((object) ("Read mode: " + (object) Patches.MainMenu_ShowRefreshingSaves_Patch.mode));
-          }
-          if (!Patches.MainMenu_ShowRefreshingSaves_Patch.doneMode)
-          {
-            if (!Input.GetKey(KeyCode.LeftControl))
+            public static bool Prepare()
             {
-              if (!Input.GetKey(KeyCode.RightControl))
-                goto label_10;
+                try
+                {
+                    if (File.Exists(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile))
+                    {
+                        Patches.MainMenu_ShowRefreshingSaves_Patch.mode = (Mode)Enum.Parse(typeof(Mode), File.ReadAllText(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile));
+                        Core.Log((object)("Read mode: " + (object)Patches.MainMenu_ShowRefreshingSaves_Patch.mode));
+                    }
+                    if (!Patches.MainMenu_ShowRefreshingSaves_Patch.doneMode)
+                    {
+                        if (!Input.GetKey(KeyCode.LeftControl))
+                        {
+                            if (!Input.GetKey(KeyCode.RightControl))
+                                goto label_10;
+                        }
+                        switch (Patches.MainMenu_ShowRefreshingSaves_Patch.mode)
+                        {
+                            case Mode.Save:
+                                Patches.MainMenu_ShowRefreshingSaves_Patch.mode = Mode.MechBay;
+                                Core.Log((object)"Mode is MechBay");
+                                break;
+                            case Mode.MechBay:
+                                Patches.MainMenu_ShowRefreshingSaves_Patch.mode = Mode.Save;
+                                Core.Log((object)"Mode is Save");
+                                break;
+                        }
+                        Core.Log((object)("Writing mode: " + (object)Patches.MainMenu_ShowRefreshingSaves_Patch.mode));
+                        File.WriteAllText(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile, Patches.MainMenu_ShowRefreshingSaves_Patch.mode.ToString());
+                        Core.Log((object)("Read back: " + (object)(Mode)Enum.Parse(typeof(Mode), File.ReadAllText(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile))));
+                        Patches.MainMenu_ShowRefreshingSaves_Patch.doneMode = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Core.Log((object)ex);
+                }
+            label_10:
+                return !Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.RightShift);
             }
-            switch (Patches.MainMenu_ShowRefreshingSaves_Patch.mode)
-            {
-              case Mode.Save:
-                Patches.MainMenu_ShowRefreshingSaves_Patch.mode = Mode.MechBay;
-                Core.Log((object) "Mode is MechBay");
-                break;
-              case Mode.MechBay:
-                Patches.MainMenu_ShowRefreshingSaves_Patch.mode = Mode.Save;
-                Core.Log((object) "Mode is Save");
-                break;
-            }
-            Core.Log((object) ("Writing mode: " + (object) Patches.MainMenu_ShowRefreshingSaves_Patch.mode));
-            File.WriteAllText(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile, Patches.MainMenu_ShowRefreshingSaves_Patch.mode.ToString());
-            Core.Log((object) ("Read back: " + (object) (Mode) Enum.Parse(typeof (Mode), File.ReadAllText(Patches.MainMenu_ShowRefreshingSaves_Patch.saveFile))));
-            Patches.MainMenu_ShowRefreshingSaves_Patch.doneMode = true;
-          }
-        }
-        catch (Exception ex)
-        {
-          Core.Log((object) ex);
-        }
-label_10:
-        return !Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.RightShift);
-      }
 
-      public static void Postfix(MainMenu __instance, BattleTech.Save.SaveGameStructure.SaveGameStructure ____saveStructure)
-      {
-        try
-        {
-          if (Patches.MainMenu_ShowRefreshingSaves_Patch.doneAbort)
-          {
-            Core.Log((object) "Aborted loading once, return");
-          }
-          else
-          {
-            Patches.MainMenu_ShowRefreshingSaves_Patch.doneAbort = true;
-            Core.Log((object) ("Running mode: " + (object) Patches.MainMenu_ShowRefreshingSaves_Patch.mode));
-            if (Patches.MainMenu_ShowRefreshingSaves_Patch.mode == Mode.MechBay)
+            public static void Postfix(MainMenu __instance, BattleTech.Save.SaveGameStructure.SaveGameStructure ____saveStructure)
             {
-              Core.Log((object) "Loading MechBay");
-              LazySingletonBehavior<UIManager>.Instance.GetOrCreateUIModule<SkirmishMechBayPanel>().SetData();
+                try
+                {
+                    if (Patches.MainMenu_ShowRefreshingSaves_Patch.doneAbort)
+                    {
+                        Core.Log((object)"Aborted loading once, return");
+                    }
+                    else
+                    {
+                        Patches.MainMenu_ShowRefreshingSaves_Patch.doneAbort = true;
+                        Core.Log((object)("Running mode: " + (object)Patches.MainMenu_ShowRefreshingSaves_Patch.mode));
+                        if (Patches.MainMenu_ShowRefreshingSaves_Patch.mode == Mode.MechBay)
+                        {
+                            Core.Log((object)"Loading MechBay");
+                            LazySingletonBehavior<UIManager>.Instance.GetOrCreateUIModule<SkirmishMechBayPanel>().SetData();
+                        }
+                        else
+                        {
+                            Core.Log((object)"Loading Save");
+                            SaveManager saveManager = UnityGameInstance.BattleTechGame.SaveManager;
+                            SlotModel slotModel = ____saveStructure.GetAllSlots().OrderByDescending<SlotModel, DateTime>((Func<SlotModel, DateTime>)(x => x.SaveTime)).FirstOrDefault<SlotModel>();
+                            Traverse.Create((object)__instance).Method("BeginResumeSave", (object)slotModel).GetValue();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Core.Log((object)ex);
+                }
             }
-            else
-            {
-              Core.Log((object) "Loading Save");
-              SaveManager saveManager = UnityGameInstance.BattleTechGame.SaveManager;
-              SlotModel slotModel = ____saveStructure.GetAllSlots().OrderByDescending<SlotModel, DateTime>((Func<SlotModel, DateTime>) (x => x.SaveTime)).FirstOrDefault<SlotModel>();
-              Traverse.Create((object) __instance).Method("BeginResumeSave", (object) slotModel).GetValue();
-            }
-          }
         }
-        catch (Exception ex)
-        {
-          Core.Log((object) ex);
-        }
-      }
     }
-  }
 }

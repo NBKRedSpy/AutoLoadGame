@@ -6,9 +6,9 @@
 
 namespace AutoLoadGame
 {
-  public enum Mode
-  {
-    Save,
-    MechBay,
-  }
+    public enum Mode
+    {
+        Save,
+        MechBay,
+    }
 }

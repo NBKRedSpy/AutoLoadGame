@@ -10,19 +10,19 @@ using System.Reflection;
 
 namespace AutoLoadGame
 {
-  public class Core
-  {
-    internal static HarmonyInstance harmony;
-
-    public static void Init(string modDir, string modSettings)
+    public class Core
     {
-      Core.Log((object) ("Starting up " + DateTime.Now.ToShortTimeString()));
-      Core.harmony = HarmonyInstance.Create("ca.gnivler.BattleTech.AutoLoadGame");
-      Core.harmony.PatchAll(Assembly.GetExecutingAssembly());
-    }
+        internal static HarmonyInstance harmony;
 
-    internal static void Log(object input)
-    {
+        public static void Init(string modDir, string modSettings)
+        {
+            Core.Log((object)("Starting up " + DateTime.Now.ToShortTimeString()));
+            Core.harmony = HarmonyInstance.Create("ca.gnivler.BattleTech.AutoLoadGame");
+            Core.harmony.PatchAll(Assembly.GetExecutingAssembly());
+        }
+
+        internal static void Log(object input)
+        {
+        }
     }
-  }
 }
