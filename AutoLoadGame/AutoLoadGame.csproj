@@ -63,6 +63,7 @@
   <PropertyGroup>
     <PostBuildEvent>xcopy /y "$(TargetPath)" "E:\Games\Steam\steamapps\common\BATTLETECH\Mods\$(ProjectName)\"
 IF NOT ERRORLEVEL 0 ( echo copy failed &amp; exit /b )
+robocopy /xc /xn /xo . "E:\Games\Steam\steamapps\common\BATTLETECH\Mods\$(ProjectName)\\" mod.json
 rd /q /s  $(ProjectName)
 robocopy . $(ProjectName) $(ProjectName).dll mod.json readme.txt
 "C:\Program Files\7-Zip\7z.exe" a $(ProjectName).zip $(ProjectName)

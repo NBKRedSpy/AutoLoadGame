@@ -19,16 +19,26 @@ The mod operates as follows:
 
 
 # Command Line Mode
+
 The parameter -AutoLoadGame={option} can be added on the command line or in a shortcut to specify which screen to launch.
 
-![image](https://user-images.githubusercontent.com/54865934/169669728-c18673e4-5ba4-4ca1-9912-2ca3f4a98472.png)
+This allows a developer to quickly launch to various screens without needing to disable the mod or hold down shift.
 
+## Steam Shortcut (App ID)
+To create a shortcut with the AutoLoadGame parameters, create a new desktop shortcut and set the Target to the following:
 
-This is useful for developers that may need to go between the main menu and the last save, but do not wish to hold shift down during the load.
+```
+{SteamDir}steam.exe -applaunch 637090 -AutoLoadGame={option}
+```
 
-## Example
-``battletech.exe -AutoLoadGame=MainMenu``.
+For example: 
+```
+C:\Steam\steam.exe -applaunch 637090 -AutoLoadGame=MainMenu
+```
 
+Using Steam.exe's applaunch option avoids Steam popping up a warning about extra parameters added on launch.
+
+![Shortcut image](Media/SteamShortcut.png)
 
 ## Command Line Options
 _**Important:**_ The option is case sensitive and can be one of the following:
@@ -38,10 +48,4 @@ _**Important:**_ The option is case sensitive and can be one of the following:
 Save | Loads the last save
 MechBay | Opens the Skirmish screen
 MainMenu | Opens the main menu
-
-# Steam Launch Warning
-Steam will display a warning when parameters are added to the game outside of Steam's game properties.  This is normal operation.
-
-![image](https://user-images.githubusercontent.com/54865934/169669819-0a7d0640-2774-41c9-acb9-c0e3ea5364c9.png)
-
 
