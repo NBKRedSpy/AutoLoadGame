@@ -10,6 +10,7 @@ namespace AutoLoadGame
     {
         Save,
         MechBay,
-        MainMenu
+        MainMenu,
+        Skirmish,
     }
 }

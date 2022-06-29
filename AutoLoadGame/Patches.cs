@@ -118,21 +118,28 @@ namespace AutoLoadGame
                     {
                         Patches.MainMenu_ShowRefreshingSaves_Patch.doneAbort = true;
                         Core.Log((object)("Running mode: " + (object)mode));
-                        if (Patches.MainMenu_ShowRefreshingSaves_Patch.mode == Mode.MechBay)
+
+                        switch(Patches.MainMenu_ShowRefreshingSaves_Patch.mode)
                         {
-                            Core.Log((object)"Loading MechBay");
-                            LazySingletonBehavior<UIManager>.Instance.GetOrCreateUIModule<SkirmishMechBayPanel>().SetData();
-                        }
-                        else if (Patches.MainMenu_ShowRefreshingSaves_Patch.mode == Mode.MainMenu)
-                        {
-                            //Will go to main menu.
-                        }
-                        else //Assume Mode.Save
-                        {
-                            Core.Log((object)"Loading Save");
-                            SaveManager saveManager = UnityGameInstance.BattleTechGame.SaveManager;
-                            SlotModel slotModel = ____saveStructure.GetAllSlots().OrderByDescending<SlotModel, DateTime>((Func<SlotModel, DateTime>)(x => x.SaveTime)).FirstOrDefault<SlotModel>();
-                            Traverse.Create((object)__instance).Method("BeginResumeSave", (object)slotModel).GetValue();
+                            case Mode.MechBay:
+                                Core.Log((object)"Loading MechBay");
+                                LazySingletonBehavior<UIManager>.Instance.GetOrCreateUIModule<SkirmishMechBayPanel>().SetData();
+                                break;
+                            case Mode.Skirmish:
+                                LazySingletonBehavior<UIManager>.Instance.GetOrCreateUIModule<SkirmishSettings_Beta>("", true);
+                                __instance.Pool(false);
+                                break;
+
+                            case Mode.MainMenu:
+                                break;
+                            case Mode.Save:
+                                Core.Log((object)"Loading Save");
+                                SaveManager saveManager = UnityGameInstance.BattleTechGame.SaveManager;
+                                SlotModel slotModel = ____saveStructure.GetAllSlots().OrderByDescending<SlotModel, DateTime>((Func<SlotModel, DateTime>)(x => x.SaveTime)).FirstOrDefault<SlotModel>();
+                                Traverse.Create((object)__instance).Method("BeginResumeSave", (object)slotModel).GetValue();
+                                break;
+                            default:
+                                throw new ArgumentException($"Unexpected value {Patches.MainMenu_ShowRefreshingSaves_Patch.mode}", "mode");
                         }
                     }
                 }
