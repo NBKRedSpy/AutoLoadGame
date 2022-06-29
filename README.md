@@ -46,6 +46,7 @@ _**Important:**_ The option is case sensitive and can be one of the following:
 |Setting|Description|
 |--|--|
 Save | Loads the last save
-MechBay | Opens the Skirmish screen
-MainMenu | Opens the main menu
+MechBay | Opens the skirmish mech Bay screen.
+MainMenu | Opens the Main Menu.
+Skirmish | Opens the single player skirmish screen.
 
